@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="marsrover" default="all">
+  
+  
+  <property file="marsrover.properties"/>
+
+  <property name="skip.tests" value="true"/>
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.orig/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/.bundle/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.zip"/>
+    <include name="*.war"/>
+    <include name="*.egg"/>
+    <include name="*.ear"/>
+    <include name="*.swc"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+    <include name="**/?*.ftl"/>
+  </patternset>
+  
+  <!-- marsrover -->
+  
+  <dirname property="module.marsrover.basedir" file="${ant.file}"/>
+  
+  
+  
+  <property name="compiler.args.marsrover" value="${compiler.args}"/>
+  
+  <property name="marsrover.output.dir" value="${module.marsrover.basedir}/out/production/marsrover"/>
+  <property name="marsrover.testoutput.dir" value="${module.marsrover.basedir}/out/test/marsrover"/>
+  <property name="marsrover.build.dir" value="${module.marsrover.basedir}/build"/>
+  
+  <path id="marsrover.module.bootclasspath">
+
+  </path>
+  
+  <path id="marsrover.module.production.classpath" path="${module.marsrover.basedir}/out/production/marsrover/thoughtworks"/>
+  
+  <path id="marsrover.runtime.production.module.classpath">
+    <pathelement location="${marsrover.output.dir}"/>
+  </path>
+  
+  <path id="marsrover.module.classpath">
+    <pathelement location="${marsrover.output.dir}"/>
+  </path>
+  
+  <path id="marsrover.runtime.module.classpath">
+    <pathelement location="${marsrover.testoutput.dir}"/>
+    <pathelement location="${marsrover.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.marsrover">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.marsrover">
+    <patternset refid="excluded.from.module.marsrover"/>
+  </patternset>
+  
+  <path id="marsrover.module.sourcepath">
+    <dirset dir="${module.marsrover.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.marsrover" depends="compile.module.marsrover.production,compile.module.marsrover.tests" description="Compile module marsrover"/>
+  
+  <target name="compile.module.marsrover.production" description="Compile module marsrover; production classes">
+    <mkdir dir="${marsrover.output.dir}"/>
+    <javac destdir="${marsrover.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+      <compilerarg line="${compiler.args.marsrover}"/>
+      <bootclasspath refid="marsrover.module.bootclasspath"/>
+      <classpath refid="marsrover.module.production.classpath"/>
+      <src refid="marsrover.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.marsrover"/>
+    </javac>
+    
+    <copy todir="${marsrover.output.dir}">
+      <fileset dir="${module.marsrover.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.marsrover.tests" depends="compile.module.marsrover.production" description="compile module marsrover; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.marsrover" description="cleanup module">
+    <delete dir="${marsrover.output.dir}"/>
+    <delete dir="${marsrover.build.dir}"/>
+    <delete dir="${marsrover.testoutput.dir}"/>
+  </target>
+
+  <target name="jar">
+        <mkdir dir="build/"/>
+        <jar destfile="build/MarsRover.jar" basedir="${module.marsrover.basedir}/out/production/marsrover/" manifest="${module.marsrover.basedir}/MANIFEST.MF">
+            <manifest>
+                <attribute name="Main-Class" value="thoughtworks.MarsRover"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run">
+        <java jar="build/MarsRover.jar" fork="true"/>
+    </target>
+
+  
+  <target name="init" description="Build initialization">
+
+  </target>
+  
+  <target name="clean" depends="clean.module.marsrover" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.marsrover, jar, run" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>
